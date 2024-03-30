@@ -4,6 +4,9 @@ import { Document } from 'mongoose';
 @Schema({ versionKey: false })
 export class Categories extends Document {
   @Prop({ unique: true })
+  slug: string;
+
+  @Prop()
   name: string;
 
   @Prop()

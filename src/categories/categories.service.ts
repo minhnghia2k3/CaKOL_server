@@ -30,12 +30,11 @@ export class CategoriesService {
     createCategoryDto: CreateCategoryDto,
   ): Promise<Categories> {
     const isCategoryExist = await this.categoriesModel.findOne({
-      name: createCategoryDto.name,
+      slug: createCategoryDto.slug,
     });
-    console.log('exist: ', isCategoryExist);
     if (isCategoryExist) {
       throw new ConflictException(
-        `There is already has category with name "${createCategoryDto.name}"`,
+        `There is already has category with name "${createCategoryDto.slug}"`,
       );
     }
     return await this.categoriesModel.create(createCategoryDto);

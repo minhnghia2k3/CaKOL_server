@@ -1,13 +1,14 @@
 import {
+  IsArray,
   IsBoolean,
   IsMongoId,
   IsNotEmpty,
   IsOptional,
   IsString,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import { OfficeHours } from './office-hours.dto';
-import { Categories } from 'src/categories/schemas/categories.schema';
 
 export class CreateKOLDto {
   @IsNotEmpty()
@@ -39,8 +40,10 @@ export class CreateKOLDto {
   @ValidateNested()
   office_hours: OfficeHours;
 
+  @ValidateIf((o) => Array.isArray(o))
+  @IsArray()
   @IsMongoId()
-  categories: Categories[];
+  categories: string | string[];
 
   @IsOptional()
   @IsBoolean()

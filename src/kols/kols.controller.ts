@@ -8,6 +8,7 @@ import {
   Put,
   Query,
   UploadedFiles,
+  UseFilters,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -22,6 +23,7 @@ import { multerOptions } from './multer-options';
 import { KOLIdDto } from './dto/request/kol-id.dto';
 import { GetKOLsQueryDto } from './dto/request/get-kols-query.dto';
 import { AdminRole } from 'src/users/guards/admin-role.guard';
+import { DeleteFileOnErrorFilter } from './filter/delete-file-on-error.filter';
 
 @Controller('kols')
 export class KolsController {
@@ -79,6 +81,7 @@ export class KolsController {
   @UseInterceptors(
     FileFieldsInterceptor([{ name: 'images', maxCount: 5 }], multerOptions),
   )
+  @UseFilters(DeleteFileOnErrorFilter)
   async createKOL(
     @Body() createKOLDto: CreateKOLDto,
     @UploadedFiles() images?: Express.Multer.File[],
@@ -92,6 +95,7 @@ export class KolsController {
   @UseInterceptors(
     FileFieldsInterceptor([{ name: 'images', maxCount: 5 }], multerOptions),
   )
+  @UseFilters(DeleteFileOnErrorFilter)
   async updateKOL(
     @Param() params: KOLIdDto,
     @Body() updateKOLDto: UpdateKOLDto,

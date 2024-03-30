@@ -15,13 +15,13 @@ import { KolsService, builtListResponse } from './kols.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UserActive } from 'src/users/guards/user-active.guard';
 import { KOLs } from './schemas/kols.schema';
-import { ObjectId } from 'mongoose';
 import { CreateKOLDto } from './dto/request/create-kol.dto';
 import { UpdateKOLDto } from './dto/request/update-kol.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from './multer-options';
 import { KOLIdDto } from './dto/request/kol-id.dto';
 import { GetKOLsQueryDto } from './dto/request/get-kols-query.dto';
+import { AdminRole } from 'src/users/guards/admin-role.guard';
 
 @Controller('kols')
 export class KolsController {
@@ -38,7 +38,7 @@ export class KolsController {
 
     return result;
   }
-  @UseGuards(JwtAuthGuard, UserActive)
+
   @Get()
   async getKOLs(@Query() query: GetKOLsQueryDto): Promise<builtListResponse> {
     let filter: any = {};
@@ -69,13 +69,12 @@ export class KolsController {
     });
   }
 
-  @UseGuards(JwtAuthGuard, UserActive)
   @Get(':id')
-  async getKOL(@Param('id') id: ObjectId): Promise<KOLs> {
-    return await this.kolsService.getKOL(JSON.stringify(id));
+  async getKOL(@Param() params: KOLIdDto): Promise<KOLs> {
+    return await this.kolsService.getKOL(params.id);
   }
 
-  @UseGuards(JwtAuthGuard, UserActive)
+  @UseGuards(JwtAuthGuard, UserActive, AdminRole)
   @Post()
   @UseInterceptors(
     FileFieldsInterceptor([{ name: 'images', maxCount: 5 }], multerOptions),
@@ -88,7 +87,7 @@ export class KolsController {
     return await this.kolsService.createKOL(newKOLData);
   }
 
-  @UseGuards(JwtAuthGuard, UserActive)
+  @UseGuards(JwtAuthGuard, UserActive, AdminRole)
   @Put(':id')
   @UseInterceptors(
     FileFieldsInterceptor([{ name: 'images', maxCount: 5 }], multerOptions),
@@ -102,7 +101,7 @@ export class KolsController {
     return await this.kolsService.updateKOL(params.id, newKOLData);
   }
 
-  @UseGuards(JwtAuthGuard, UserActive)
+  @UseGuards(JwtAuthGuard, UserActive, AdminRole)
   @Delete(':id')
   async deleteKOL(@Param() params: KOLIdDto): Promise<KOLs> {
     return await this.kolsService.deleteKOL(params.id);

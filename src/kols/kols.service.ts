@@ -69,6 +69,7 @@ export class KolsService {
   }
 
   async updateKOL(kolId: string, updateKOLDto: UpdateKOLDto): Promise<KOLs> {
+    //TODO: handle update images
     const kol = await this.kolsModel.findByIdAndUpdate(kolId, updateKOLDto, {
       new: true,
     });

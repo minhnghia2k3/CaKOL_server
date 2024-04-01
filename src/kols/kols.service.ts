@@ -44,7 +44,6 @@ export class KolsService {
     page = 1,
   }: {
     query?: GetKOLsQueryDto;
-    filter?: FilterQuery<KOLs>;
     limit?: number;
     page?: number;
   }): Promise<builtListResponse> {

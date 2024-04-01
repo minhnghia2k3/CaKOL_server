@@ -18,6 +18,7 @@ import { multerOptions } from './multer-options';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UserActive } from 'src/users/guards/user-active.guard';
 import { AdminRole } from 'src/users/guards/admin-role.guard';
+import { ApiConsumes, ApiParam } from '@nestjs/swagger';
 
 @Controller('categories')
 export class CategoriesController {
@@ -31,6 +32,7 @@ export class CategoriesController {
   @UseGuards(JwtAuthGuard, UserActive, AdminRole)
   @Post()
   @UseInterceptors(FileInterceptor('image', multerOptions))
+  @ApiConsumes('multipart/form-data')
   async createCategory(
     @Body() createCategoryDto: CreateCategoryDto,
     @UploadedFile() image: Express.Multer.File,
@@ -41,6 +43,7 @@ export class CategoriesController {
 
   @UseGuards(JwtAuthGuard, UserActive, AdminRole)
   @Delete(':id')
+  @ApiParam({ name: 'id', description: 'Category ID in ObjectId' })
   async deleteCategory(@Param() params: ParamsDto) {
     return await this.categoriesService.deleteCategory(params.id);
   }

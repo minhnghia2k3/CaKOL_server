@@ -24,11 +24,18 @@ import { KOLIdDto } from './dto/request/kol-id.dto';
 import { GetKOLsQueryDto } from './dto/request/get-kols-query.dto';
 import { AdminRole } from 'src/users/guards/admin-role.guard';
 import { DeleteFileOnErrorFilter } from './filter/delete-file-on-error.filter';
+import { ApiConsumes, ApiParam } from '@nestjs/swagger';
 
 @Controller('kols')
 export class KolsController {
   constructor(private readonly kolsService: KolsService) {}
 
+  /**
+   * Format images into body payload
+   * @param body
+   * @param images
+   * @returns KOLs
+   */
   private formatData(body: UpdateKOLDto, images?: Express.Multer.File[]) {
     const result = { ...body };
 
@@ -41,27 +48,44 @@ export class KolsController {
     return result;
   }
 
+  /**
+   * Get all KOLs
+   * @param query
+   * @returns List of KOLs
+   */
   @Get()
   async getKOLs(@Query() query: GetKOLsQueryDto): Promise<builtListResponse> {
     return await this.kolsService.getAllKOLs({
       query: query,
-      // filter: filter,
       limit: query.limit,
       page: query.page,
     });
   }
 
+  /**
+   * Get KOL by id.
+   * @param params
+   * @returns KOL
+   */
   @Get(':id')
+  @ApiParam({ name: 'id', description: 'KOL ID in ObjectId' })
   async getKOL(@Param() params: KOLIdDto): Promise<KOLs> {
     return await this.kolsService.getKOL(params.id);
   }
 
+  /**
+   * Create a new KOL
+   * @param createKOLDto
+   * @param images
+   * @returns KOL
+   */
   @UseGuards(JwtAuthGuard, UserActive, AdminRole)
   @Post()
   @UseInterceptors(
     FileFieldsInterceptor([{ name: 'images', maxCount: 5 }], multerOptions),
   )
   @UseFilters(DeleteFileOnErrorFilter)
+  @ApiConsumes('multipart/form-data')
   async createKOL(
     @Body() createKOLDto: CreateKOLDto,
     @UploadedFiles() images?: Express.Multer.File[],
@@ -70,12 +94,21 @@ export class KolsController {
     return await this.kolsService.createKOL(newKOLData);
   }
 
+  /**
+   * Update existing KOL
+   * @param params
+   * @param updateKOLDto
+   * @param images
+   * @returns KOL
+   */
   @UseGuards(JwtAuthGuard, UserActive, AdminRole)
   @Put(':id')
   @UseInterceptors(
     FileFieldsInterceptor([{ name: 'images', maxCount: 5 }], multerOptions),
   )
   @UseFilters(DeleteFileOnErrorFilter)
+  @ApiParam({ name: 'id', description: 'KOL ID in ObjectId' })
+  @ApiConsumes('multipart/form-data')
   async updateKOL(
     @Param() params: KOLIdDto,
     @Body() updateKOLDto: UpdateKOLDto,
@@ -85,8 +118,14 @@ export class KolsController {
     return await this.kolsService.updateKOL(params.id, newKOLData);
   }
 
+  /**
+   * Set KOL's active to false
+   * @param params
+   * @returns KOL
+   */
   @UseGuards(JwtAuthGuard, UserActive, AdminRole)
   @Delete(':id')
+  @ApiParam({ name: 'id', description: 'KOL ID in ObjectId' })
   async deleteKOL(@Param() params: KOLIdDto): Promise<KOLs> {
     return await this.kolsService.deleteKOL(params.id);
   }

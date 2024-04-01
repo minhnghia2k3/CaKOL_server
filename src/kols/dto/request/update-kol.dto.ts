@@ -9,8 +9,10 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { OfficeHours } from './office-hours.dto';
+import { PartialType } from '@nestjs/swagger';
+import { CreateKOLDto } from './create-kol.dto';
 
-export class UpdateKOLDto {
+export class UpdateKOLDto extends PartialType(CreateKOLDto) {
   @IsOptional()
   @IsString()
   name: string;

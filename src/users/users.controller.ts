@@ -20,6 +20,7 @@ import { OwnerGuard } from './guards/owner.guard';
 import { UserActive } from './guards/user-active.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from './multer-options';
+import { ApiParam } from '@nestjs/swagger';
 
 @Controller('users')
 export class UsersController {
@@ -43,6 +44,7 @@ export class UsersController {
    * Get user by user Id.
    */
   @Get(':id')
+  @ApiParam({ name: 'id', description: 'User ID in ObjectId' })
   async getUser(@Param() params: GetUserParam): Promise<UsersResponse> {
     return await this.usersService.findUserById(params.id);
   }
@@ -54,6 +56,7 @@ export class UsersController {
    */
   @UseGuards(JwtAuthGuard, OwnerGuard, UserActive)
   @Put(':id')
+  @ApiParam({ name: 'id', description: 'User ID in ObjectId' })
   @UseInterceptors(FileInterceptor('avatar', multerOptions))
   async updateUser(
     @Param() params: GetUserParam,
@@ -71,6 +74,7 @@ export class UsersController {
    */
   @UseGuards(JwtAuthGuard, OwnerGuard, UserActive)
   @Delete(':id')
+  @ApiParam({ name: 'id', description: 'User ID in ObjectId' })
   async deleteUser(@Param() params: GetUserParam) {
     return this.usersService.deleteUser(params.id);
   }

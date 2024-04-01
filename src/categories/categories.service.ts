@@ -28,7 +28,8 @@ export class CategoriesService {
 
   async getCategory(filter: FilterQuery<Categories>): Promise<Categories> {
     const category = await this.categoriesModel.findOne(filter);
-    if (!category) throw new NotFoundException('Not found by request query.');
+    if (!category)
+      throw new NotFoundException('Not found by Categories request.');
     return category;
   }
 

@@ -43,29 +43,9 @@ export class KolsController {
 
   @Get()
   async getKOLs(@Query() query: GetKOLsQueryDto): Promise<builtListResponse> {
-    let filter: any = {};
-    if (query.name || query.major) {
-      filter = { $or: [] };
-
-      if (query.name) {
-        filter.$or.push({
-          name: { $regex: new RegExp(query.name, 'iu') },
-        });
-      }
-
-      if (query.major) {
-        filter.$or.push({ major: { $regex: new RegExp(query.major, 'iu') } });
-      }
-
-      if (query.location) {
-        filter.$or.push({
-          major: { $regex: new RegExp(query.location, 'iu') },
-        });
-      }
-      // filter = { $or: [ {name: /abc}, {major: /abc/}] }
-    }
     return await this.kolsService.getAllKOLs({
-      filter: filter,
+      query: query,
+      // filter: filter,
       limit: query.limit,
       page: query.page,
     });

@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Categories } from './schemas/categories.schema';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { PathLike, unlink } from 'fs';
 
@@ -24,6 +24,12 @@ export class CategoriesService {
 
   async getCategories(): Promise<Categories[]> {
     return await this.categoriesModel.find({});
+  }
+
+  async getCategory(filter: FilterQuery<Categories>): Promise<Categories> {
+    const category = await this.categoriesModel.findOne(filter);
+    if (!category) throw new NotFoundException('Not found by request query.');
+    return category;
   }
 
   async createCategory(

@@ -15,7 +15,7 @@ export class GetKOLsQueryDto {
 
   @IsOptional()
   @IsString()
-  major: string;
+  categories: string;
 
   @IsOptional()
   @IsString()

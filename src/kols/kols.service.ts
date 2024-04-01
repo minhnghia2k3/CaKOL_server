@@ -4,6 +4,8 @@ import { KOLs } from './schemas/kols.schema';
 import { FilterQuery, Model } from 'mongoose';
 import { UpdateKOLDto } from './dto/request/update-kol.dto';
 import { CreateKOLDto } from './dto/request/create-kol.dto';
+import { GetKOLsQueryDto } from './dto/request/get-kols-query.dto';
+import { CategoriesService } from 'src/categories/categories.service';
 
 export type builtListResponse = {
   info: {
@@ -15,7 +17,10 @@ export type builtListResponse = {
 };
 @Injectable()
 export class KolsService {
-  constructor(@InjectModel(KOLs.name) private kolsModel: Model<KOLs>) {}
+  constructor(
+    @InjectModel(KOLs.name) private kolsModel: Model<KOLs>,
+    private readonly categoriesService: CategoriesService,
+  ) {}
 
   async builtListResponse(
     kol: KOLs[],
@@ -34,23 +39,41 @@ export class KolsService {
   }
 
   async getAllKOLs({
-    filter,
+    query,
     limit = 10,
     page = 1,
   }: {
+    query?: GetKOLsQueryDto;
     filter?: FilterQuery<KOLs>;
     limit?: number;
     page?: number;
   }): Promise<builtListResponse> {
+    const userQuery: FilterQuery<KOLs> = { active: { $ne: false } };
+
+    if (query.name) {
+      userQuery.name = { $regex: new RegExp(query.name, 'iu') };
+    }
+
+    if (query.location)
+      userQuery.location = { $regex: new RegExp(query.location, 'iu') };
+
+    if (query.categories) {
+      const category = await this.categoriesService.getCategory({
+        name: { $regex: new RegExp(query.categories, 'iu') },
+      });
+      userQuery.categories = category._id;
+    }
+
     const skipUnit = page === 0 ? 0 : Math.ceil(page - 1) * limit;
-    const totalUnit = await this.kolsModel.countDocuments();
+    const totalUnits = await this.kolsModel.countDocuments(userQuery);
     const kols = await this.kolsModel
-      .find({ ...filter, active: { $ne: false } })
+      .find({ ...userQuery })
       .skip(skipUnit)
       .limit(limit)
       .populate('categories')
       .sort({ createdAt: -1 });
-    const totalPage = kols.length === 0 ? 0 : Math.ceil(totalUnit / limit);
+
+    const totalPage = Math.ceil(totalUnits / limit);
 
     return this.builtListResponse(
       kols,

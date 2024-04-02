@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
-import { Categories } from 'src/categories/schemas/categories.schema';
+import { Categories } from '../../categories/schemas/categories.schema';
 
 @Schema({ timestamps: true })
 export class KOLs extends Document {

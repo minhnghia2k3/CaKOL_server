@@ -3,8 +3,8 @@ import { KolsController } from './kols.controller';
 import { KolsService } from './kols.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { KOLs, KOLsSchema } from './schemas/kols.schema';
-import { UsersModule } from 'src/users/users.module';
-import { CategoriesModule } from 'src/categories/categories.module';
+import { UsersModule } from '../users/users.module';
+import { CategoriesModule } from '../categories/categories.module';
 
 @Module({
   imports: [

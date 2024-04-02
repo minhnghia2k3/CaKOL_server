@@ -5,7 +5,7 @@ import { FilterQuery, Model } from 'mongoose';
 import { UpdateKOLDto } from './dto/request/update-kol.dto';
 import { CreateKOLDto } from './dto/request/create-kol.dto';
 import { GetKOLsQueryDto } from './dto/request/get-kols-query.dto';
-import { CategoriesService } from 'src/categories/categories.service';
+import { CategoriesService } from '../categories/categories.service';
 
 export type builtListResponse = {
   info: {

@@ -15,9 +15,9 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { ParamsDto } from './dto/params.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from './multer-options';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { UserActive } from 'src/users/guards/user-active.guard';
-import { AdminRole } from 'src/users/guards/admin-role.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { UserActive } from '../users/guards/user-active.guard';
+import { AdminRole } from '../users/guards/admin-role.guard';
 import { ApiConsumes, ApiParam } from '@nestjs/swagger';
 
 @Controller('categories')

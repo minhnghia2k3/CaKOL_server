@@ -1,4 +1,4 @@
-import { Roles } from 'src/users/schemas/users.schema';
+import { Roles } from '../../schemas/users.schema';
 
 export class UsersResponse {
   _id: string;

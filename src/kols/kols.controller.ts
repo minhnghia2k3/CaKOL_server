@@ -13,8 +13,8 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { KolsService, builtListResponse } from './kols.service';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { UserActive } from 'src/users/guards/user-active.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { UserActive } from '../users/guards/user-active.guard';
 import { KOLs } from './schemas/kols.schema';
 import { CreateKOLDto } from './dto/request/create-kol.dto';
 import { UpdateKOLDto } from './dto/request/update-kol.dto';
@@ -22,7 +22,7 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from './multer-options';
 import { KOLIdDto } from './dto/request/kol-id.dto';
 import { GetKOLsQueryDto } from './dto/request/get-kols-query.dto';
-import { AdminRole } from 'src/users/guards/admin-role.guard';
+import { AdminRole } from '../users/guards/admin-role.guard';
 import { DeleteFileOnErrorFilter } from './filter/delete-file-on-error.filter';
 import { ApiConsumes, ApiParam } from '@nestjs/swagger';
 

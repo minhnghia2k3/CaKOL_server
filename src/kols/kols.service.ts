@@ -56,9 +56,9 @@ export class KolsService {
     if (query.location)
       userQuery.location = { $regex: new RegExp(query.location, 'iu') };
 
-    if (query.categories) {
+    if (query.slug) {
       const category = await this.categoriesService.getCategory({
-        name: { $regex: new RegExp(query.categories, 'iu') },
+        slug: { $regex: new RegExp(query.slug, 'i') },
       });
       userQuery.categories = category._id;
     }

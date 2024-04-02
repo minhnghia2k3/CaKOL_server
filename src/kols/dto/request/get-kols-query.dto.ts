@@ -20,7 +20,7 @@ export class GetKOLsQueryDto {
   @IsOptional()
   @IsString()
   @ApiProperty({ required: false })
-  categories: string;
+  slug: string;
 
   @IsOptional()
   @IsString()

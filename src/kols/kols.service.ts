@@ -83,7 +83,7 @@ export class KolsService {
   }
 
   async getKOL(kolId: string): Promise<KOLs> {
-    return await this.kolsModel.findById(kolId);
+    return await this.kolsModel.findById(kolId).populate('categories');
   }
 
   async createKOL(createKOLDto: CreateKOLDto): Promise<KOLs> {

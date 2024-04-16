@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 import { Categories } from '../../categories/schemas/categories.schema';
+import { OfficeHours } from 'src/office-hours/schemas/officeHours.schema';
 
 @Schema({ timestamps: true })
 export class KOLs extends Document {
@@ -25,31 +26,8 @@ export class KOLs extends Document {
   @Prop({ type: Map, of: String, default: [] })
   socials: Record<string, string>;
 
-  /**
-   * office_hours: [
-   *  {
-   *    time: 13:00 - 15:00,
-   *    date: `date now`,
-   *    available: true,
-   *    price: 12$
-   *  }
-   * ]
-   */
-  @Prop({
-    type: [
-      {
-        time: String,
-        available: Boolean,
-        price: String,
-      },
-    ],
-    default: [],
-  })
-  office_hours: {
-    time: string;
-    available: boolean;
-    price: string;
-  }[];
+  @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'OfficeHours' }])
+  office_hours: OfficeHours[];
 
   @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'Categories' }])
   categories: Categories[];

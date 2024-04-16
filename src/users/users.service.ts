@@ -12,6 +12,7 @@ import { UsersResponse } from './dto/response/users-response.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 import { PathLike, unlink } from 'fs';
+// import { Carts } from 'src/carts/schemas/cart.schema';
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(Users.name) private usersModel: Model<Users>) {}
@@ -141,4 +142,12 @@ export class UsersService {
     }
     return user;
   }
+
+  // async getUserCart(userId: string): Promise<Carts> {
+  //   return (await this.cartModel.findOne({ user: userId })).populate({
+  //     path: 'items.kols',
+  //     model: 'KOLs',
+  //     select: 'name images',
+  //   });
+  // }
 }

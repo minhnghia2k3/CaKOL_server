@@ -6,9 +6,7 @@ import {
   IsOptional,
   IsString,
   ValidateIf,
-  ValidateNested,
 } from 'class-validator';
-import { OfficeHours } from './office-hours.dto';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateKOLDto {
@@ -44,10 +42,6 @@ export class CreateKOLDto {
   @IsOptional()
   @ApiProperty({ required: false })
   socials: Record<string, any>;
-
-  @ValidateNested()
-  @ApiProperty({ type: [OfficeHours] })
-  office_hours: OfficeHours;
 
   @ValidateIf((o) => Array.isArray(o))
   @IsArray()

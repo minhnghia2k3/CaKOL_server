@@ -7,6 +7,8 @@ import { KolsModule } from './kols/kols.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { OfficeHoursModule } from './office-hours/office-hours.module';
+import { CartsModule } from './carts/carts.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { join } from 'path';
       rootPath: join(__dirname, '..', 'uploads/'),
       serveRoot: '/uploads/',
     }),
+    OfficeHoursModule,
+    CartsModule,
   ],
 })
 export class AppModule {}

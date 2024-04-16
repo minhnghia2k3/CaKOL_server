@@ -21,6 +21,8 @@ import { UserActive } from './guards/user-active.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from './multer-options';
 import { ApiParam } from '@nestjs/swagger';
+// import { CurrentUser } from './users.decorator';
+// import { Users } from './schemas/users.schema';
 
 @Controller('users')
 export class UsersController {
@@ -78,4 +80,10 @@ export class UsersController {
   async deleteUser(@Param() params: GetUserParam) {
     return this.usersService.deleteUser(params.id);
   }
+
+  // @UseGuards(JwtAuthGuard, OwnerGuard, UserActive)
+  // @Get(':id/carts')
+  // async getUserCart(@CurrentUser() user: Users) {
+  //   return await this.usersService.getUserCart(user._id);
+  // }
 }

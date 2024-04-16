@@ -6,6 +6,8 @@ import { UpdateKOLDto } from './dto/request/update-kol.dto';
 import { CreateKOLDto } from './dto/request/create-kol.dto';
 import { GetKOLsQueryDto } from './dto/request/get-kols-query.dto';
 import { CategoriesService } from '../categories/categories.service';
+import { OfficeHours } from '../office-hours/schemas/officeHours.schema';
+import { OfficeHoursService } from 'src/office-hours/office-hours.service';
 
 export type builtListResponse = {
   info: {
@@ -19,6 +21,7 @@ export type builtListResponse = {
 export class KolsService {
   constructor(
     @InjectModel(KOLs.name) private kolsModel: Model<KOLs>,
+    // private readonly officeHoursService: OfficeHoursService,
     private readonly categoriesService: CategoriesService,
   ) {}
 
@@ -69,6 +72,7 @@ export class KolsService {
       .find({ ...userQuery })
       .skip(skipUnit)
       .limit(limit)
+      .populate('office_hours')
       .populate('categories')
       .sort({ createdAt: -1 });
 
@@ -83,8 +87,18 @@ export class KolsService {
   }
 
   async getKOL(kolId: string): Promise<KOLs> {
-    return await this.kolsModel.findById(kolId).populate('categories');
+    const kol = await this.kolsModel
+      .findById(kolId)
+      .populate({ path: 'office_hours' })
+      .populate('categories');
+    return kol;
   }
+
+  async findSpecificKOL(filter: FilterQuery<KOLs>): Promise<KOLs> {
+    return await this.kolsModel.findOne(filter);
+  }
+
+  // async createOfficeHour(kol: string, office_hour: OfficeHours)
 
   async createKOL(createKOLDto: CreateKOLDto): Promise<KOLs> {
     return await this.kolsModel.create(createKOLDto);

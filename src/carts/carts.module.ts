@@ -16,5 +16,6 @@ import { OfficeHoursModule } from 'src/office-hours/office-hours.module';
   ],
   controllers: [CartsController],
   providers: [CartsService],
+  exports: [CartsService],
 })
 export class CartsModule {}

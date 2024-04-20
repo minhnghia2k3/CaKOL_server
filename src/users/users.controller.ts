@@ -21,6 +21,8 @@ import { UserActive } from './guards/user-active.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from './multer-options';
 import { ApiParam } from '@nestjs/swagger';
+import { CurrentUser } from './users.decorator';
+import { Users } from './schemas/users.schema';
 // import { CurrentUser } from './users.decorator';
 // import { Users } from './schemas/users.schema';
 
@@ -41,14 +43,14 @@ export class UsersController {
   }
 
   /**
-   * [GET] /users/:id
-   *
-   * Get user by user Id.
+   * Get current user
+   * @param params
+   * @returns UsersResponse
    */
-  @Get(':id')
-  @ApiParam({ name: 'id', description: 'User ID in ObjectId' })
-  async getUser(@Param() params: GetUserParam): Promise<UsersResponse> {
-    return await this.usersService.findUserById(params.id);
+  @UseGuards(JwtAuthGuard, UserActive)
+  @Get()
+  async getUser(@CurrentUser() user: Users): Promise<UsersResponse> {
+    return await this.usersService.findUserById(user._id);
   }
 
   /**

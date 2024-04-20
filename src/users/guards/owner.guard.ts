@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   CanActivate,
   ExecutionContext,
   ForbiddenException,
@@ -13,6 +14,8 @@ export class OwnerGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const requestUserId = request.params.id;
     const currentUserId = request.user._id.toString();
+    if (!requestUserId)
+      throw new BadRequestException('There is not request user id given.');
     if (requestUserId !== currentUserId)
       throw new ForbiddenException(
         'You dont have permission to update another property.',

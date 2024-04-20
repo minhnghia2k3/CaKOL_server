@@ -4,23 +4,22 @@ import { CartsService } from './carts.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UserActive } from 'src/users/guards/user-active.guard';
 import { Users } from 'src/users/schemas/users.schema';
-import { OwnerGuard } from 'src/users/guards/owner.guard';
 import { Carts } from './schemas/carts.schema';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { DeleteCartDto } from './dto/delete-cart.dto';
 
-@Controller('users')
+@Controller('carts')
 export class CartsController {
   constructor(private readonly cartsService: CartsService) {}
 
-  @UseGuards(JwtAuthGuard, UserActive, OwnerGuard)
-  @Get(':id/carts')
+  @UseGuards(JwtAuthGuard, UserActive)
+  @Get()
   async findUserCart(@CurrentUser() user: Users): Promise<Carts> {
     return await this.cartsService.findUserCart(user._id);
   }
 
-  @UseGuards(JwtAuthGuard, UserActive, OwnerGuard)
-  @Post(':id/carts')
+  @UseGuards(JwtAuthGuard, UserActive)
+  @Post()
   async addItemToCart(
     @CurrentUser() user: Users,
     @Body() createCartDto: CreateCartDto,
@@ -28,8 +27,8 @@ export class CartsController {
     return await this.cartsService.addItemToCart(user._id, createCartDto);
   }
 
-  @UseGuards(JwtAuthGuard, UserActive, OwnerGuard)
-  @Delete(':id/carts')
+  @UseGuards(JwtAuthGuard, UserActive)
+  @Delete()
   async removeItemFromCart(
     @CurrentUser() user: Users,
     @Body() deleteCartDto: DeleteCartDto,

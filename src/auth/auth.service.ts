@@ -28,6 +28,8 @@ export class AuthService {
     res.cookie('Authentication', access_token, {
       expires,
       httpOnly: true,
+      secure: true,
+      sameSite: 'none',
     });
   }
 }

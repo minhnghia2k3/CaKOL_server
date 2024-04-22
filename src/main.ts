@@ -6,7 +6,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    origin: process.env.CLIENT,
+    origin: [process.env.CLIENT, 'http://localhost:3000'],
     credentials: true,
   });
   app.useGlobalPipes(

@@ -59,13 +59,6 @@ export class KolsService {
     if (query.location)
       userQuery.location = { $regex: new RegExp(query.location, 'iu') };
 
-    if (query.slug) {
-      const category = await this.categoriesService.getCategory({
-        slug: { $regex: new RegExp(query.slug, 'i') },
-      });
-      userQuery.categories = category._id;
-    }
-
     const skipUnit = page === 0 ? 0 : Math.ceil(page - 1) * limit;
     const totalUnits = await this.kolsModel.countDocuments(userQuery);
     const kols = await this.kolsModel

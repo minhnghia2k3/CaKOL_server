@@ -192,7 +192,7 @@ export class PaymentsService {
   }
 
   /**
-   * List all user receipt
+   * List all user invoices.
    * @param userId
    */
   async listReceipts(userId: string) {
@@ -201,5 +201,14 @@ export class PaymentsService {
       {},
       { sort: 'createdAt -1' },
     );
+  }
+
+  /**
+   * List all invoice records
+   */
+  async listAllReceipts() {
+    return await this.paymentsModel
+      .find({ status: 2 })
+      .populate({ path: 'user', model: 'Users' });
   }
 }

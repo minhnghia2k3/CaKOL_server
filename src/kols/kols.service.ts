@@ -6,8 +6,6 @@ import { UpdateKOLDto } from './dto/request/update-kol.dto';
 import { CreateKOLDto } from './dto/request/create-kol.dto';
 import { GetKOLsQueryDto } from './dto/request/get-kols-query.dto';
 import { CategoriesService } from '../categories/categories.service';
-import { OfficeHours } from '../office-hours/schemas/officeHours.schema';
-import { OfficeHoursService } from 'src/office-hours/office-hours.service';
 
 export type builtListResponse = {
   info: {

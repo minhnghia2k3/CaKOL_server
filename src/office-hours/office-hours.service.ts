@@ -1,9 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { OfficeHours } from '../office-hours/schemas/officeHours.schema';
 import { CreateOfficeHoursDto } from './dto/create-office-hours.dto';
 import { KolsService, builtListResponse } from 'src/kols/kols.service';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class OfficeHoursService {
@@ -11,6 +13,7 @@ export class OfficeHoursService {
     @InjectModel(OfficeHours.name)
     private readonly officeHoursModel: Model<OfficeHours>,
     private readonly kolsService: KolsService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async findById(officeHoursId: string): Promise<OfficeHours> {
@@ -79,7 +82,9 @@ export class OfficeHoursService {
 
     const totalUnits = await this.officeHoursModel.countDocuments();
     const totalPage = Math.ceil(totalUnits / limit);
-    return this.builtListResponse(ohs, ohs.length, page, totalPage);
+    const result = this.builtListResponse(ohs, ohs.length, page, totalPage);
+    await this.cacheManager.set('allOhs', result);
+    return result;
   }
 
   /**

@@ -24,8 +24,10 @@ import { ApiParam } from '@nestjs/swagger';
 import { CurrentUser } from './users.decorator';
 import { Users } from './schemas/users.schema';
 import { AdminRole } from './guards/admin-role.guard';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('users')
+@UseInterceptors(CacheInterceptor)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

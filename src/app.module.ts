@@ -10,9 +10,16 @@ import { join } from 'path';
 import { OfficeHoursModule } from './office-hours/office-hours.module';
 import { CartsModule } from './carts/carts.module';
 import { PaymentsModule } from './payments/payments.module';
+import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [
+    CacheModule.register({
+      isGlobal: true,
+      ttl: 1000 * 60, // ms: 1s = 1000ms
+      max: 10, // maximum number of items in cache
+    }),
     UsersModule,
     AuthModule,
     ConfigModule.forRoot({ isGlobal: true }),
@@ -26,6 +33,12 @@ import { PaymentsModule } from './payments/payments.module';
     OfficeHoursModule,
     CartsModule,
     PaymentsModule,
+  ],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
+    },
   ],
 })
 export class AppModule {}

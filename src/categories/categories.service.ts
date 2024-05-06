@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -8,11 +9,14 @@ import { Categories } from './schemas/categories.schema';
 import { FilterQuery, Model } from 'mongoose';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { PathLike, unlink } from 'fs';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class CategoriesService {
   constructor(
     @InjectModel(Categories.name) private categoriesModel: Model<Categories>,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   private removeImage(path: PathLike): void {
@@ -23,7 +27,9 @@ export class CategoriesService {
   }
 
   async getCategories(): Promise<Categories[]> {
-    return await this.categoriesModel.find({});
+    const result = await this.categoriesModel.find({});
+    await this.cacheManager.set('allCategories', result);
+    return result;
   }
 
   async getCategory(filter: FilterQuery<Categories>): Promise<Categories> {

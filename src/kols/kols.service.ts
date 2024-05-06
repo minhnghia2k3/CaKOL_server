@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { KOLs } from './schemas/kols.schema';
 import { FilterQuery, Model } from 'mongoose';
@@ -6,6 +6,8 @@ import { UpdateKOLDto } from './dto/request/update-kol.dto';
 import { CreateKOLDto } from './dto/request/create-kol.dto';
 import { GetKOLsQueryDto } from './dto/request/get-kols-query.dto';
 import { CategoriesService } from '../categories/categories.service';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 export type builtListResponse = {
   info: {
@@ -19,7 +21,7 @@ export type builtListResponse = {
 export class KolsService {
   constructor(
     @InjectModel(KOLs.name) private kolsModel: Model<KOLs>,
-    // private readonly officeHoursService: OfficeHoursService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly categoriesService: CategoriesService,
   ) {}
 
@@ -54,6 +56,13 @@ export class KolsService {
       userQuery.name = { $regex: new RegExp(query.name, 'iu') };
     }
 
+    if (query.slug) {
+      const category = await this.categoriesService.getCategory({
+        slug: { $regex: new RegExp(query.slug, 'i') },
+      });
+      userQuery.categories = category._id;
+    }
+
     if (query.location)
       userQuery.location = { $regex: new RegExp(query.location, 'iu') };
 
@@ -69,12 +78,14 @@ export class KolsService {
 
     const totalPage = Math.ceil(totalUnits / limit);
 
-    return this.builtListResponse(
+    const result = this.builtListResponse(
       kols,
       kols.length,
       page === 0 ? 1 : page,
       totalPage,
     );
+    await this.cacheManager.set('allKOLs', result);
+    return result;
   }
 
   async getKOL(kolId: string): Promise<KOLs> {
@@ -82,6 +93,8 @@ export class KolsService {
       .findById(kolId)
       .populate({ path: 'office_hours' })
       .populate('categories');
+    await this.cacheManager.set(kol._id, kol);
+
     return kol;
   }
 

@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   Logger,
   NotFoundException,
@@ -13,6 +14,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 export interface Payment {
   partnerCode: string;
@@ -34,6 +37,7 @@ export class PaymentsService {
     private readonly configService: ConfigService,
     private readonly cartsService: CartsService,
     private readonly httpService: HttpService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   private async paymentProcess({
@@ -207,8 +211,12 @@ export class PaymentsService {
    * List all invoice records
    */
   async listAllReceipts() {
-    return await this.paymentsModel
+    const result = await this.paymentsModel
       .find({ status: 2 })
       .populate({ path: 'user', model: 'Users' });
+
+    await this.cacheManager.set('allReceipts', result);
+
+    return result;
   }
 }

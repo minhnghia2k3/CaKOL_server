@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -12,10 +13,15 @@ import { UsersResponse } from './dto/response/users-response.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 import { PathLike, unlink } from 'fs';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 // import { Carts } from 'src/carts/schemas/cart.schema';
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(Users.name) private usersModel: Model<Users>) {}
+  constructor(
+    @InjectModel(Users.name) private usersModel: Model<Users>,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
   /**
    * Format response
@@ -39,11 +45,15 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('Not found user by id.');
     }
-    return this.builtResponse(user);
+    const result = this.builtResponse(user);
+    await this.cacheManager.set('currentUser', result);
+    return result;
   }
 
   async findUsers(): Promise<UsersResponse[]> {
-    return await this.usersModel.find({ active: true });
+    const result = await this.usersModel.find({ active: true });
+    await this.cacheManager.set('allUsers', result);
+    return result;
   }
 
   private removeImage(path: PathLike): void {

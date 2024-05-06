@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -9,12 +10,15 @@ import { Model } from 'mongoose';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { OfficeHoursService } from 'src/office-hours/office-hours.service';
 import { DeleteCartDto } from './dto/delete-cart.dto';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class CartsService {
   constructor(
     @InjectModel(Carts.name) private readonly cartModel: Model<Carts>,
     private readonly officeHoursService: OfficeHoursService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   /**
@@ -23,13 +27,16 @@ export class CartsService {
    * @returns Promise<Carts>
    */
   async findUserCart(userId: string): Promise<Carts> {
-    return (await this.cartModel.findOne({ user: userId })).populate({
+    const result = (await this.cartModel.findOne({ user: userId })).populate({
       path: 'office_hours',
       populate: {
         path: 'kol',
         select: 'name images',
       },
     });
+    await this.cacheManager.set('userCart', result);
+
+    return result;
   }
 
   /**

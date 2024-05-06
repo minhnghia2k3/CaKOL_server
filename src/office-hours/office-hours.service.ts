@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { OfficeHours } from '../office-hours/schemas/officeHours.schema';
 import { CreateOfficeHoursDto } from './dto/create-office-hours.dto';
-import { KolsService } from 'src/kols/kols.service';
+import { KolsService, builtListResponse } from 'src/kols/kols.service';
 
 @Injectable()
 export class OfficeHoursService {
@@ -37,15 +37,49 @@ export class OfficeHoursService {
     return officeHour;
   }
 
+  async builtListResponse(
+    ohs: OfficeHours[],
+    unit: number,
+    currentPage: number,
+    totalPage: number,
+  ) {
+    return {
+      info: {
+        unit: unit,
+        currentPage: currentPage,
+        totalPage: totalPage,
+      },
+      data: [...ohs],
+    };
+  }
+
   /**
    * List all office hours
    * @returns
    */
-  async listOfficeHours() {
-    return await this.officeHoursModel.find({}).populate({
-      path: 'kol',
-      select: 'name images',
-    });
+  async listOfficeHours({
+    kolName,
+    limit = 10,
+    page = 1,
+  }: {
+    kolName?: string;
+    limit?: number;
+    page?: number;
+  }): Promise<builtListResponse> {
+    const skipUnit = page === 0 ? 0 : Math.ceil(page - 1) * limit;
+    const ohs = await this.officeHoursModel
+      .find({})
+      .limit(limit)
+      .skip(skipUnit)
+      .populate({
+        path: 'kol',
+        select: 'name images',
+      })
+      .sort({ appointmentDate: -1 });
+
+    const totalUnits = await this.officeHoursModel.countDocuments();
+    const totalPage = Math.ceil(totalUnits / limit);
+    return this.builtListResponse(ohs, ohs.length, page, totalPage);
   }
 
   /**

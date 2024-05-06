@@ -1,11 +1,9 @@
 import {
-  IsArray,
   IsBoolean,
   IsMongoId,
   IsNotEmpty,
   IsOptional,
   IsString,
-  ValidateIf,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -43,11 +41,9 @@ export class CreateKOLDto {
   @ApiProperty({ required: false })
   socials: Record<string, any>;
 
-  @ValidateIf((o) => Array.isArray(o))
-  @IsArray()
   @IsMongoId()
   @ApiProperty({ type: [String] })
-  categories: string | string[];
+  categories: string;
 
   @IsOptional()
   @IsBoolean()

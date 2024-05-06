@@ -6,8 +6,6 @@ import { UpdateKOLDto } from './dto/request/update-kol.dto';
 import { CreateKOLDto } from './dto/request/create-kol.dto';
 import { GetKOLsQueryDto } from './dto/request/get-kols-query.dto';
 import { CategoriesService } from '../categories/categories.service';
-import { OfficeHours } from '../office-hours/schemas/officeHours.schema';
-import { OfficeHoursService } from 'src/office-hours/office-hours.service';
 
 export type builtListResponse = {
   info: {
@@ -58,13 +56,6 @@ export class KolsService {
 
     if (query.location)
       userQuery.location = { $regex: new RegExp(query.location, 'iu') };
-
-    if (query.slug) {
-      const category = await this.categoriesService.getCategory({
-        slug: { $regex: new RegExp(query.slug, 'i') },
-      });
-      userQuery.categories = category._id;
-    }
 
     const skipUnit = page === 0 ? 0 : Math.ceil(page - 1) * limit;
     const totalUnits = await this.kolsModel.countDocuments(userQuery);

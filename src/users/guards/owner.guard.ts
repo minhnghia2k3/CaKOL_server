@@ -12,6 +12,7 @@ export class OwnerGuard implements CanActivate {
     // Get request
     // Compare request.user with param_id
     const request = context.switchToHttp().getRequest();
+    if (request.user.type === 1) return true;
     const requestUserId = request.params.id;
     const currentUserId = request.user._id.toString();
     if (!requestUserId)

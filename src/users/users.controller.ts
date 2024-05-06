@@ -23,8 +23,7 @@ import { multerOptions } from './multer-options';
 import { ApiParam } from '@nestjs/swagger';
 import { CurrentUser } from './users.decorator';
 import { Users } from './schemas/users.schema';
-// import { CurrentUser } from './users.decorator';
-// import { Users } from './schemas/users.schema';
+import { AdminRole } from './guards/admin-role.guard';
 
 @Controller('users')
 export class UsersController {
@@ -76,16 +75,20 @@ export class UsersController {
    *
    * Update user's active to boolean.
    */
-  @UseGuards(JwtAuthGuard, OwnerGuard, UserActive)
+  @UseGuards(JwtAuthGuard, AdminRole, OwnerGuard, UserActive)
   @Delete(':id')
   @ApiParam({ name: 'id', description: 'User ID in ObjectId' })
   async deleteUser(@Param() params: GetUserParam) {
     return this.usersService.deleteUser(params.id);
   }
 
-  // @UseGuards(JwtAuthGuard, OwnerGuard, UserActive)
-  // @Get(':id/carts')
-  // async getUserCart(@CurrentUser() user: Users) {
-  //   return await this.usersService.getUserCart(user._id);
-  // }
+  /**
+   * Find all user's records.
+   * @returns Users
+   */
+  @UseGuards(JwtAuthGuard, AdminRole)
+  @Get('/all')
+  async getTotalUsers(): Promise<UsersResponse[]> {
+    return await this.usersService.findUsers();
+  }
 }

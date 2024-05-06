@@ -32,4 +32,9 @@ export class AuthService {
       sameSite: 'none',
     });
   }
+
+  async logout(res: Response) {
+    res.cookie('Authentication', '', { expires: new Date() });
+    return { msg: 'Logout successfully' };
+  }
 }

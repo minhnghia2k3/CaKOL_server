@@ -42,6 +42,10 @@ export class UsersService {
     return this.builtResponse(user);
   }
 
+  async findUsers(): Promise<UsersResponse[]> {
+    return await this.usersModel.find({ active: true });
+  }
+
   private removeImage(path: PathLike): void {
     unlink(path, (err) => {
       if (err) throw err;

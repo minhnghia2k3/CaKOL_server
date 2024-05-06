@@ -5,7 +5,6 @@ import {
   IsObject,
   IsOptional,
   IsString,
-  ValidateIf,
 } from 'class-validator';
 import { PartialType } from '@nestjs/swagger';
 import { CreateKOLDto } from './create-kol.dto';
@@ -40,11 +39,9 @@ export class UpdateKOLDto extends PartialType(CreateKOLDto) {
   @IsObject()
   socials: Record<string, any>;
 
-  @IsOptional()
-  @ValidateIf((o) => Array.isArray(o))
   @IsArray()
   @IsMongoId()
-  categories: string | string[];
+  categories: string;
 
   @IsOptional()
   @IsString()

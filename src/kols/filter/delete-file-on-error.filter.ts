@@ -22,15 +22,16 @@ export class DeleteFileOnErrorFilter implements ExceptionFilter {
       return files.images;
     };
     const filePaths: any = getFiles(files);
-
-    filePaths.forEach((file) => {
-      fs.unlink(file.path, (err) => {
-        if (err) {
-          console.error(err);
-          return err;
-        }
+    if (filePaths && filePaths.length > 0) {
+      filePaths.forEach((file) => {
+        fs.unlink(file.path, (err) => {
+          if (err) {
+            console.error(err);
+            return err;
+          }
+        });
       });
-    });
+    }
 
     response.status(status).json(exception.getResponse());
   }
